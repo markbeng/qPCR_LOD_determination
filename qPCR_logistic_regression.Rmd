@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "qPCR LOD calculation notebook"
 output: html_notebook
 ---
 
@@ -23,16 +23,13 @@ names(df)
 ```{r}
 attach(df)
 ```
-
+Next, we fit the logistic regression model:
 ```{r}
 glm.fit=glm(detected~copies, family=binomial, data=df)
 summary(glm.fit)
 coef(glm.fit)
 ```
-```{r}
-library(MASS)
-```
-
+Finally, we plot the data, along with a reference line at p(detected)=0.95:
 ```{r}
 plot(detected~copies, data=df, col="red4")
 newdat <- data.frame(copies=seq(min(df$copies), max(df$copies),len=100))
@@ -40,7 +37,8 @@ newdat$detected = predict(glm.fit, newdata=newdat, type="response")
 lines(detected ~ copies, newdat, col="green4", lwd=2)
 abline(h=0.95, col="red")
 ```
-
+Finally, we calculate the copies using the dose.p function from the MASS library:
 ```{r}
+library(MASS)
 dose.p(glm.fit, p=0.95)
 ```
