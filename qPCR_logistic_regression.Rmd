@@ -39,7 +39,6 @@ newdat <- data.frame(copies=seq(min(df$copies), max(df$copies),len=100))
 newdat$detected = predict(glm.fit, newdata=newdat, type="response")
 lines(detected ~ copies, newdat, col="green4", lwd=2)
 abline(h=0.95, col="red")
-locator()
 ```
 
 ```{r}
