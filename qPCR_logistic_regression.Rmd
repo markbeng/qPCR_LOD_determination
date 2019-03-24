@@ -1,0 +1,47 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+In this notebook, we perform logistic regression on qPCR data.  Data is provided as copy number of template, Ct value, and detected/not-detected (coded as 1 vs. 0).  The LOD in qPCR is typically defined by the copy number that results in detection 95% of the time.  However, since we only have 6 replicate data points at each copy number, we will fit a logistic regression model to the data, and use the model to estimate the LOD.
+
+First, we read in the data from the csv file, "pcr_raw_data.csv":
+
+```{r}
+df <- read.csv("pcr_raw_data.csv", header=TRUE)
+dim(df)
+```
+
+```{r}
+head(df)
+```
+
+```{r}
+names(df)
+```
+
+```{r}
+attach(df)
+```
+
+```{r}
+glm.fit=glm(detected~copies, family=binomial, data=df)
+summary(glm.fit)
+coef(glm.fit)
+```
+```{r}
+library(MASS)
+```
+
+```{r}
+plot(detected~copies, data=df, col="red4")
+newdat <- data.frame(copies=seq(min(df$copies), max(df$copies),len=100))
+newdat$detected = predict(glm.fit, newdata=newdat, type="response")
+lines(detected ~ copies, newdat, col="green4", lwd=2)
+abline(h=0.95, col="red")
+locator()
+```
+
+```{r}
+dose.p(glm.fit, p=0.95)
+```
